@@ -1,0 +1,8 @@
+{
+  "total_pairs": 10000,
+  "passed": 9011,
+  "pass_rate": 0.9011,
+  "sources": [
+    "asic"
+  ]
+}

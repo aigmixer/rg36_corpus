@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+*.pyo
+parsed/
+raw/
+*.pdf
+*.html
