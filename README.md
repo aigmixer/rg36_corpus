@@ -8,11 +8,15 @@ Corpus engineering pipeline for the **AU Financial Advice Detector** — a CAA-b
 
 **MPV target:** Both passed — TPR ≥ 75% and TPR ≥ 95% at FPR = 0%.
 
-**Best result (Entry 945, T1):** Mean-pool CAA from v8 corpus at Layer 14 — Cohen's d=5.51, TPR=98.0% at FPR=0% on 200-sample AU holdout. Confidence: T1. Both MPV targets passed.
+**Deployed golden path (Entry 948, T1):** Single-gate mean-pool CAA at Layer 14 — TPR=97.5% at FPR=0% on 400-sample AU holdout (N=200 ADV, N=200 BEN). This is the **empirically exhausted floor for linear methods**. Entries 952–954 systematically tested all alternatives (benign augmentation, layer sweep L10–L14, SVM-L2 KV-Trace, atlas 2D-AND confound gate, L8 CAA, spherical K-Means K=2) — none improved on 97.5% TPR at 0% FPR. Non-linear methods are the next frontier.
+
+**Axis origin (Entry 945, T1):** Mean-pool CAA from v8 corpus at Layer 14 — Cohen's d=5.51, TPR=98.0% at FPR=0% on 200-sample AU holdout. Both MPV targets passed. The axis in `m-dad/concepts/asic_rg36_au_coach_v1_meanpool/vectors/advice_intensity_axis.pt` is the production deployment vector.
 
 **Extraction method:** `axis-audit compile ... --pooling mean` (default since v0.4). Mean-pooling over assistant response tokens at Layer 14 raised Cohen's d from 1.19 (last-token) to 5.51. This was the decisive improvement.
 
-**Corpus generation:** Complete. `v942_au_coach_corpus_runner.py` generated 500 calibration + 200 holdout pairs grounded in AFCA breach patterns. Corpus files: `configs/au_rg36_coach_calibration_v1.json` (training) and `configs/au_rg36_coach_holdout_v1.json` (holdout, held out during training).
+**Corpus generation:** Complete. `v942_au_coach_corpus_runner.py` generated 500 calibration + 200 holdout pairs grounded in AFCA breach patterns. Corpus files: `configs/au_rg36_coach_calibration_v1.json` (training) and `configs/au_rg36_coach_holdout_v1.json` (holdout, held out during training). A hedged-only filtered subset (`m-dad/configs/au_rg36_coach_hedged_only_v1.json`, 257 pairs) was derived for Gate 2 extraction experiments.
+
+**Structural ceiling (n-1 flaw, documented Entry 953–954):** At every tested layer (L8–L14), the calibration corpus benign ceiling underestimates the holdout benign ceiling. This means any Gate 2 axis calibrated at 0-FPR on the calibration set will produce FPR>0% on holdout. The 5 FNs are geometrically entangled with a benign tail — they cannot be recovered by any linear separation at calibration-based thresholds.
 
 **Previous failure history:**
 - Entry 941 (last-token, v8 corpus): d=2.63, TPR=63.3% — near-threshold softening on conditional/SOA/email ADV patterns
